@@ -4,8 +4,8 @@ const model = require("./gemini");
 const Snippet = require("./Snippet");
 
 
-// GET route to format code
-router.get("/format", async (req, res) => {
+// POST route to format code
+router.post("/format", async (req, res) => {
   try {
     const { code } = req.body;
     console.log("code", code);
