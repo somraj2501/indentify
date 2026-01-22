@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Doto, Source_Code_Pro } from "next/font/google";
 import "./globals.css";
+import { Github } from "lucide-react";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const doto = Doto({
+  variable: "--font-doto",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const sourceCodePro = Source_Code_Pro({
+  variable: "--font-source-code-pro",
   subsets: ["latin"],
 });
 
@@ -25,9 +26,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${doto.variable} ${sourceCodePro.variable} antialiased flex flex-col w-screen h-screen`}
       >
+        <header className="w-screen p-2 flex justify-between">
+          <h1 className="font-doto lg:text-3xl">_indentify.</h1>
+          <h6 className="font-source-code-pro text-neutral-500  text-xs"><a href="https://github.com/somraj2501/code-formatter" className="hover:text-neutral-50 transition-colors"><Github className="inline" size={18} /></a></h6>
+        </header>
         {children}
+        <footer className="w-screen p-2 flex justify-center">
+          <h6 className="font-source-code-pro text-neutral-500  text-xs">Made with ❤️ by <a href="https://github.com/somraj2501" className="hover:text-neutral-50 transition-colors">somraj2501</a></h6>
+        </footer>
       </body>
     </html>
   );
