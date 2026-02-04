@@ -6,7 +6,11 @@ require("dotenv").config();
 const app = express();
 
 // CORS configuration
-const allowedOrigins = ["https://indentify-app.vercel.app"];
+const allowedOrigins = [
+  "https://indentify-app.vercel.app",
+  "http://localhost:3000",
+  "http://localhost:3001",
+];
 
 app.use(
   cors({
