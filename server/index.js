@@ -35,12 +35,15 @@ mongoose.connect(process.env.MONGO_URI)
   .catch(err => console.log(err));
 
 const routes = require("./routes");
+app.use("/api", routes);
 
-app.use("/", (req, res) => {
-  res.send("Backend is working");
+app.get("/", (req, res) => {
+  res.json({ 
+    status: "ok",
+    message: "Backend is working",
+    timestamp: new Date().toISOString()
+  });
 });
-
-app.use("/api/", routes);
 
 // For local development
 if (process.env.NODE_ENV !== 'production') {
