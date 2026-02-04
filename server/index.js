@@ -5,18 +5,26 @@ require("dotenv").config();
 
 const app = express();
 
-// CORS configuration
-const allowedOrigins = [
-  "https://indentify-app.vercel.app",
-  "http://localhost:3000",
-  "http://localhost:3001",
-];
+// CORS configuration from environment variables
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
+  : ['http://localhost:3000', 'http://localhost:3001'];
+
+const allowedMethods = process.env.ALLOWED_METHODS
+  ? process.env.ALLOWED_METHODS.split(',').map(method => method.trim())
+  : ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'];
+
+if (process.env.NODE_ENV !== 'production') {
+  console.log('CORS Configuration:');
+  console.log('  Allowed Origins:', allowedOrigins);
+  console.log('  Allowed Methods:', allowedMethods);
+}
 
 app.use(
   cors({
     origin: allowedOrigins,
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: allowedMethods,
   }),
 );
 
@@ -27,6 +35,11 @@ mongoose.connect(process.env.MONGO_URI)
   .catch(err => console.log(err));
 
 const routes = require("./routes");
+
+app.use("/", (req, res) => {
+  res.send("Backend is working");
+});
+
 app.use("/api/", routes);
 
 // For local development
