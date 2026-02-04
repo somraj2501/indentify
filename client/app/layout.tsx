@@ -25,9 +25,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <link rel="icon" href="/indentify_logo.svg" />
-      </head>
       <body
         className={`${doto.variable} ${sourceCodePro.variable} antialiased flex flex-col w-screen h-screen`}
       >
