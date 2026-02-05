@@ -3,7 +3,7 @@
 import { useState } from "react";
 import CodeInput from "./components/CodeInput";
 import FormattedOutput from "./components/FormattedOutput";
-import { formatCode } from "./services/formatService";
+import { formatCode, saveSnippet } from "./services/formatService";
 
 export default function Home() {
   const [originalCode, setOriginalCode] = useState("");
@@ -32,8 +32,9 @@ export default function Home() {
   };
 
   const handleSave = () => {
-    setOriginalCode(formattedCode);
+    saveSnippet(formattedCode);
     setFormattedCode("");
+    setOriginalCode("");
   };
 
   const codeBoxStyles = "w-full h-full md:max-w-[80%]";

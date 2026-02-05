@@ -42,7 +42,7 @@ export async function formatCode(code: string): Promise<FormatResponse> {
   }
 }
 
-export async function saveCode(code: string): Promise<FormatResponse> {
+export async function saveSnippet(code: string): Promise<FormatResponse> {
   try {
     const response = await fetch(`${API_BASE_URL}/saveSnippet`, {
       method: "POST",
