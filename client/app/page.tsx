@@ -31,9 +31,16 @@ export default function Home() {
     setIsLoading(false);
   };
 
+  const handleSave = () => {
+    setOriginalCode(formattedCode);
+    setFormattedCode("");
+  };
+
+  const codeBoxStyles = "w-full h-full md:max-w-[80%]";
+
   return (
-    <main className="flex-1 flex flex-col lg:flex-row justify-center items-center gap-8 py-8 md:py-4 px-8">
-      <div className="w-full max-w-4xl h-full">
+    <main className="flex flex-col flex-1 lg:flex-row justify-center items-center gap-8">
+      <div className={codeBoxStyles}>
         <CodeInput
           value={originalCode}
           onChange={setOriginalCode}
@@ -42,9 +49,11 @@ export default function Home() {
           error={error}
         />
       </div>
-      <div className="w-full max-w-4xl h-full">
-        <FormattedOutput value={formattedCode} />
-      </div>
+      {formattedCode && (
+        <div className={codeBoxStyles}>
+          <FormattedOutput value={formattedCode} onSave={handleSave} />
+        </div>
+      )}
     </main>
   );
 }

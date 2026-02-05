@@ -41,3 +41,34 @@ export async function formatCode(code: string): Promise<FormatResponse> {
     };
   }
 }
+
+export async function saveCode(code: string): Promise<FormatResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/saveSnippet`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        code: code,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return {
+      formattedCode: data.formattedCode || data.formatted || code,
+      success: true,
+    };
+  } catch (error) {
+    console.error("Error formatting code:", error);
+    return {
+      formattedCode: "",
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
