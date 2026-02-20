@@ -7,18 +7,60 @@ const Snippet = require("./Snippet");
 // POST route to format code
 router.post("/format", async (req, res) => {
   try {
-    const { code } = req.body;
-    console.log("code", code);
-    const prompt = `You are a code formatter. Analyze the following code, detect its programming language, and format it properly.
+    const { code, language, indentType, indentSize } = req.body;
 
-      Return ONLY a valid JSON object with this exact structure (no markdown, no code blocks, just raw JSON):
-      {
-        "language": "the detected programming language",
-        "formatted": "the formatted code"
-      }
+    const languagePrompt = language
+      ? `The user claims the language is "${language}". You must verify this claim.
+        - If correct, keep it.
+        - If incorrect, override it with the true detected language.
+        - Always return the true detected language.`
+      : `Detect the programming language accurately.`;
 
-      Here is the stringified code, parse it, analyze it and format it properly:
-      ${code}`;
+    const indentPrompt =
+      indentType === "tab"
+        ? `Use TABS for indentation.`
+        : `Use SPACES for indentation with an indent size of ${indentSize || 2}.`;
+
+    const prompt = `
+    You are a deterministic code formatter and language detector.
+
+    TASKS:
+    1. Detect the programming language of the provided code.
+    2. Verify the user-provided language if present and correct it if wrong.
+    3. Format the code using standard, idiomatic formatting conventions of the detected language:
+      - ${indentPrompt}
+      - Fix spacing
+      - Preserve logic exactly
+      - Do NOT add, remove, or modify functionality
+    4. Do NOT explain anything.
+
+    ${languagePrompt}
+
+    STRICT OUTPUT REQUIREMENTS:
+    - Return ONLY valid JSON.
+    - NO markdown.
+    - NO code fences.
+    - NO comments.
+    - NO extra text.
+    - Output must be parseable with JSON.parse().
+    - Escape all special characters properly.
+
+    OUTPUT SCHEMA (exact keys only):
+    {
+      "language": string,
+      "detectedLanguage": string,
+      "formatted": string
+    }
+
+    RULES:
+    - language = final correct language (verified or detected)
+    - detectedLanguage = same as language
+    - formatted = properly formatted code
+    - Preserve all characters except whitespace formatting
+
+    INPUT CODE:
+    ${code}
+    `;
     const result = await model.generateContent(prompt);
     const text = result.response.text();
 

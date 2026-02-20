@@ -8,10 +8,15 @@ import { formatCode, saveSnippet } from "./services/formatService";
 export default function Home() {
   const [originalCode, setOriginalCode] = useState("");
   const [formattedCode, setFormattedCode] = useState("");
+  const [detectedLanguage, setDetectedLanguage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleFormat = async () => {
+  const handleFormat = async (
+    language?: string,
+    indentType?: string,
+    indentSize?: number,
+  ) => {
     if (!originalCode.trim()) {
       setError("Please enter some code to format");
       return;
@@ -20,10 +25,16 @@ export default function Home() {
     setIsLoading(true);
     setError(null);
 
-    const result = await formatCode(originalCode);
+    const result = await formatCode(
+      originalCode,
+      language,
+      indentType,
+      indentSize,
+    );
 
     if (result.success) {
       setFormattedCode(result.formattedCode);
+      setDetectedLanguage(result.detectedLanguage);
     } else {
       setError(result.error || "Failed to format code");
     }
@@ -37,13 +48,14 @@ export default function Home() {
     setOriginalCode("");
   };
 
-  const codeBoxStyles = "w-full h-full md:max-w-[80%]";
+  const codeBoxStyles = "w-full flex-1 h-full";
 
   return (
-    <main className="flex flex-col flex-1 lg:flex-row justify-center items-center gap-8">
-      <div className={codeBoxStyles}>
+    <div className="flex flex-col flex-1 lg:flex-row justify-center items-stretch gap-8 w-full h-full min-h-0">
+      <div className={`${codeBoxStyles} min-h-0`}>
         <CodeInput
           value={originalCode}
+          detectedLanguage={detectedLanguage}
           onChange={setOriginalCode}
           onFormat={handleFormat}
           isLoading={isLoading}
@@ -51,10 +63,10 @@ export default function Home() {
         />
       </div>
       {formattedCode && (
-        <div className={codeBoxStyles}>
+        <div className={`${codeBoxStyles} min-h-0`}>
           <FormattedOutput value={formattedCode} onSave={handleSave} />
         </div>
       )}
-    </main>
+    </div>
   );
 }
