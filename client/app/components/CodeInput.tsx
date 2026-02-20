@@ -1,6 +1,5 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface CodeInputProps {
   placeholder?: string;
@@ -13,7 +12,6 @@ interface CodeInputProps {
     indentSize?: number,
   ) => void;
   isLoading?: boolean;
-  error?: string | null;
 }
 
 export default function CodeInput({
@@ -23,7 +21,6 @@ export default function CodeInput({
   detectedLanguage,
   onFormat,
   isLoading = false,
-  error,
 }: CodeInputProps) {
   const [internalValue, setInternalValue] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("");
@@ -50,6 +47,65 @@ export default function CodeInput({
   ];
 
   const value = controlledValue !== undefined ? controlledValue : internalValue;
+
+  useEffect(() => {
+    if (detectedLanguage) {
+      const matchedLang = languages.find(
+        (lang) => lang.toLowerCase() === detectedLanguage.toLowerCase(),
+      );
+      if (matchedLang) {
+        setSelectedLanguage(matchedLang);
+        setCustomLanguage("");
+      } else {
+        setSelectedLanguage("Other");
+        setCustomLanguage(detectedLanguage);
+      }
+    }
+  }, [detectedLanguage]);
+
+  useEffect(() => {
+    const lang =
+      selectedLanguage === "Other" ? customLanguage : selectedLanguage;
+    if (!lang) return;
+
+    const normalizedLang = lang.toLowerCase();
+
+    // 2-space languages
+    const twoSpaceLangs = [
+      "javascript",
+      "typescript",
+      "html",
+      "css",
+      "sql",
+      "ruby",
+      "json",
+      "yaml",
+    ];
+    // 4-space languages
+    const fourSpaceLangs = [
+      "python",
+      "java",
+      "c++",
+      "c",
+      "c#",
+      "rust",
+      "php",
+      "swift",
+      "kotlin",
+    ];
+    // Tab languages
+    const tabLangs = ["go"];
+
+    if (twoSpaceLangs.includes(normalizedLang)) {
+      setIndentType("space");
+      setIndentSize(2);
+    } else if (fourSpaceLangs.includes(normalizedLang)) {
+      setIndentType("space");
+      setIndentSize(4);
+    } else if (tabLangs.includes(normalizedLang)) {
+      setIndentType("tab");
+    }
+  }, [selectedLanguage, customLanguage]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
@@ -78,6 +134,7 @@ export default function CodeInput({
         )}
       </div>
       <textarea
+        autoFocus
         value={value}
         onChange={handleChange}
         placeholder={placeholder}
@@ -88,12 +145,13 @@ export default function CodeInput({
                    resize-none
                    transition-all duration-200
                    min-h-0
-                   overflow-auto"
+                   overflow-auto
+                   custom-scrollbar"
         spellCheck={false}
         wrap="off"
       />
-      <div className="mt-4 flex flex-col gap-4">
-        <div className="flex flex-col sm:flex-row gap-3">
+      <div className="mt-2 md:mt-4 flex flex-col gap-2 md:gap-4">
+        <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
           <div className="flex-1">
             <select
               value={selectedLanguage}
@@ -129,7 +187,7 @@ export default function CodeInput({
           )}
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
           <div className="flex-1 flex gap-2">
             <div className="flex-1">
               <select
@@ -145,7 +203,7 @@ export default function CodeInput({
               </select>
             </div>
 
-            {indentType === "space" && (
+            {indentType && (
               <div className="w-24">
                 <select
                   value={indentSize}
@@ -162,33 +220,29 @@ export default function CodeInput({
               </div>
             )}
           </div>
-          <div className="flex-1 hidden sm:block"></div>
-        </div>
-
-        <button
-          onClick={() => {
-            const finalLanguage =
-              selectedLanguage === "Other" ? customLanguage : selectedLanguage;
-            onFormat?.(finalLanguage, indentType, indentSize);
-          }}
-          disabled={isLoading}
-          className="w-full sm:w-auto self-end px-8 py-2.5 bg-neutral-100 hover:bg-white text-black font-semibold rounded-lg 
+          <button
+            onClick={() => {
+              const finalLanguage =
+                selectedLanguage === "Other"
+                  ? customLanguage
+                  : selectedLanguage;
+              onFormat?.(finalLanguage, indentType, indentSize);
+            }}
+            disabled={isLoading}
+            className="flex-1 sm:block w-full sm:w-auto self-end px-8 py-2.5 bg-neutral-100 hover:bg-white text-black font-semibold rounded-lg 
                     font-source-code-pro text-sm transition-all duration-200
                     disabled:opacity-50 disabled:cursor-not-allowed
                     flex items-center justify-center min-w-[120px]"
-        >
-          {isLoading ? (
-            <div className="h-5 w-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
-          ) : (
-            "Format Code"
-          )}
-        </button>
+          >
+            {isLoading ? (
+              // <div className="h-5 w-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+              <div className="dot-loader"></div>
+            ) : (
+              "Format Code"
+            )}
+          </button>
+        </div>
       </div>
-      {error && (
-        <p className="mt-2 text-sm text-red-400 font-source-code-pro">
-          {error}
-        </p>
-      )}
     </div>
   );
 }

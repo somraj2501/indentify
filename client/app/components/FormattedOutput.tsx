@@ -5,16 +5,21 @@ import { useState } from "react";
 interface FormattedOutputProps {
   value?: string;
   onSave?: () => void;
+  onCopy?: () => void;
+  isSaving?: boolean;
 }
 
 export default function FormattedOutput({
   value = "",
   onSave,
+  onCopy,
+  isSaving = false,
 }: FormattedOutputProps) {
   const [copied, setCopied] = useState(false);
   const copyCode = () => {
     navigator.clipboard.writeText(value);
     setCopied(true);
+    onCopy?.();
     setTimeout(() => {
       setCopied(false);
     }, 2000);
@@ -35,33 +40,32 @@ export default function FormattedOutput({
             onClick={copyCode}
             className="relative flex items-center justify-end min-w-[80px]"
           >
-            <span
-              className={`flex items-center gap-1.5 text-xs font-source-code-pro text-neutral-50 transition-all duration-300 absolute ${
+            <h6
+              className={`gap-2 font-source-code-pro text-xs text-neutral-50 transition-all duration-300 absolute ${
                 copied
                   ? "opacity-100 translate-x-0"
                   : "opacity-0 translate-x-4 pointer-events-none"
               }`}
             >
-              <h6 className="font-source-code-pro text-xs text-neutral-500">
-                Copied
-              </h6>{" "}
-              <CopyCheckIcon size={16} className="text-green-400" />
-            </span>
-            <span
-              className={`transition-all duration-300 ${
+              Copied{" "}
+              <CopyCheckIcon
+                size={16}
+                className="inline-block text-green-400"
+              />
+            </h6>
+            <h6
+              className={`gap-2 font-source-code-pro text-xs text-neutral-500 transition-all duration-300 ${
                 copied
                   ? "opacity-0 scale-75 pointer-events-none"
                   : "opacity-100 scale-100"
               }`}
             >
-              <h6 className="font-source-code-pro text-xs text-neutral-500">
-                Copy to Clipboard
-              </h6>{" "}
+              Copy to Clipboard{" "}
               <CopyIcon
                 size={16}
-                className="text-neutral-500 hover:text-neutral-50 transition-colors"
+                className="inline-block text-neutral-500 hover:text-neutral-50 transition-colors"
               />
-            </span>
+            </h6>
           </button>
         </span>
       </div>
@@ -70,7 +74,8 @@ export default function FormattedOutput({
                    font-source-code-pro text-sm text-neutral-300 
                    overflow-auto whitespace-pre
                    transition-all duration-200
-                   min-h-0"
+                   min-h-0
+                   custom-scrollbar"
       >
         {value || (
           <span className="text-neutral-600">
@@ -80,14 +85,15 @@ export default function FormattedOutput({
       </div>
       <button
         onClick={onSave}
-        // disabled={isLoading}
-        className="mt-4 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-lg 
+        disabled={isSaving}
+        className="mt-2 md:mt-4 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-lg 
                    font-source-code-pro text-sm text-neutral-300 
                    focus:outline-none focus:ring-2 focus:ring-neutral-700 focus:border-transparent
                    transition-all duration-200
-                   disabled:opacity-50 disabled:cursor-not-allowed"
+                   disabled:opacity-50 disabled:cursor-not-allowed
+                   flex items-center justify-center min-h-[40px]"
       >
-        Save
+        {isSaving ? <div className="dot-loader"></div> : "Save"}
       </button>
     </div>
   );

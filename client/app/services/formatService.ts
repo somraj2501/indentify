@@ -33,7 +33,6 @@ export async function formatCode(
         indentSize: indentSize,
       }),
     });
-    debugger;
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

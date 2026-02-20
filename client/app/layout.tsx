@@ -14,7 +14,7 @@ const sourceCodePro = Source_Code_Pro({
 });
 
 const appSectionStyle =
-  "flex w-full xl:w-3/5 lg:w-4/5 md:w-full mx-auto py-4 px-8 lg:px-0";
+  "flex w-full xl:w-3/5 md:w-full mx-auto py-2 px-6 md:py-4 md:px-8 xl:px-0";
 
 export const metadata: Metadata = {
   title: "indentify",
@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${doto.variable} ${sourceCodePro.variable} antialiased flex flex-col w-full h-screen overflow-hidden`}
+        className={`${doto.variable} ${sourceCodePro.variable} antialiased flex flex-col w-full h-dvh overflow-hidden`}
       >
         <header
           className={`${appSectionStyle} justify-between items-baseline-last`}
@@ -65,7 +65,7 @@ export default function RootLayout({
             Made with ❤️ by{" "}
             <a
               href="https://github.com/somraj2501"
-              className="hover:text-neutral-50 transition-colors"
+              className="hover:text-neutral-50 transition-colors underline"
             >
               Som Raj
             </a>

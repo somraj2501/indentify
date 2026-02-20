@@ -33,6 +33,7 @@ router.post("/format", async (req, res) => {
       - Preserve logic exactly
       - Do NOT add, remove, or modify functionality
     4. Do NOT explain anything.
+    5. You don't need to CORRECT the code. Only format or indent.
 
     ${languagePrompt}
 
